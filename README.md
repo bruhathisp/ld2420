@@ -45,8 +45,8 @@ logger:
   baud_rate: 115200
 
 wifi:
-  ssid: "Sathya _4G"
-  password: "palimar108"
+  ssid: "your ssid"
+  password: "your password"
   ap:
     ssid: "Bedroompresencedetection"
     password: "axxxxxxxxx"
