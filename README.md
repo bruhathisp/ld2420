@@ -16,7 +16,7 @@ This project configures an ESP32 board for presence detection using the LD2420 r
    pip install esphome
    ```
 
-2. **ESP32 Board**: This project is set up for the `esp32dev` board.
+2. **ESP32c3 Board**: This project is set up for the board.
 
 3. **LD2420 Radar Sensor**: The radar sensor should be connected with the appropriate TX and RX pins.
 
@@ -24,29 +24,38 @@ This project configures an ESP32 board for presence detection using the LD2420 r
 
 The YAML configuration defines the ESP32 board, the LD2420 radar sensor, and custom thresholds for presence detection. Here’s an overview of the settings:
 
-- **UART**: Configured for TX (GPIO17) and RX (GPIO16) pins at a baud rate of 115200.
+- **UART**:
+- tx_pin: GPIO6  # Update with your Tx pin (GPIO6 recommended for Xaio ESP32-C3)
+- rx_pin: GPIO7  # Update with your Rx pin (GPIO7 recommended for Xaio ESP32-C3)
 - **Gate-specific thresholds**: The `move_threshold` and `still_threshold` values for gates 0-15 have been customized based on user input.
 
 ### Configuration File
 
 ```yaml
 esphome:
-  name: bedroompresencedetection
-  friendly_name: BedroomPresenceDetection
+  name: "some"
   platformio_options:
     upload_speed: 921600
     board_build.flash_mode: dio
+    board_build.extra_flags:
+      - "-DARDUINO_USB_CDC_ON_BOOT=0"
 
 esp32:
-  board: esp32dev
+  board: seeed_xiao_esp32c3
+  variant: esp32c3
+
+
+  
+  
+  
 
 logger:
   level: DEBUG
   baud_rate: 115200
 
 wifi:
-  ssid: "your ssid"
-  password: "your password"
+  ssid: "you ssid"
+  password: "you password"
   ap:
     ssid: "Bedroompresencedetection"
     password: "axxxxxxxxx"
@@ -55,13 +64,14 @@ captive_portal:
 
 uart:
   id: ld2420_radar
-  tx_pin: GPIO17
-  rx_pin: GPIO16
+  tx_pin: GPIO6  # Update with your Tx pin (GPIO6 recommended for Xaio ESP32-C3)
+  rx_pin: GPIO7  # Update with your Rx pin (GPIO7 recommended for Xaio ESP32-C3)
   baud_rate: 115200
   parity: NONE
   stop_bits: 1
 
-ld2420:
+ld2420:  
+  #%20Enable%20simple%20mode%20for%20older%20firmware
 
 text_sensor:
   - platform: ld2420
@@ -86,29 +96,30 @@ select:
 number:
   - platform: ld2420
     presence_timeout:
-      name: '120s'
+      name: '120s'  # Factory default value
 
     min_gate_distance:
-      name: '1'
+      name: '1'  # Factory default value (Min gate distance 1)
 
     max_gate_distance:
-      name: '12'
+      name: '12'  # Factory default value (Max gate distance 12)
 
     gate_select:
-      name: '0'
+      name: '0'  # Select gate number
 
     still_threshold:
-      name: '40000'
+      name: '40000'  # Default still threshold for gate 0
 
     move_threshold:
-      name: '60000'
+      name: '60000'  # Default move threshold for gate 0
 
     gate_move_sensitivity:
-      name: '0.5'
+      name: '0.5'  # Sensitivity for move detection (customizable)
 
     gate_still_sensitivity:
-      name: '0.5'
+      name: '0.5'  # Sensitivity for still detection (customizable)
 
+    # Gate-specific thresholds (0-15)
     gate_0:
       move_threshold:
         name: '50.49'
@@ -220,7 +231,7 @@ button:
 
 
 #### For ESPHome Dashboard (UI-based):
-To compile the YAML file and upload it to your ESP32 device, follow these steps:
+To compile the YAML file and upload it to your ESP32c3 device, follow these steps:
 
 #### a) Create your ESPHome configuration
 
