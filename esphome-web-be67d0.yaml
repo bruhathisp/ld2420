@@ -1,0 +1,211 @@
+substitutions:
+  name: esphome-web-be67d0
+  friendly_name: ESPHome Web be67d0
+
+esp32:
+  board: seeed_xiao_esp32c3
+  variant: esp32c3
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: dev
+
+
+# Enable logging
+
+logger:   
+  level: DEBUG
+  baud_rate: 115200  
+
+# Enable Home Assistant API
+api:
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+
+# Allow provisioning Wi-Fi via serial
+improv_serial:
+
+wifi:
+  ssid: "Sathya _4G"
+  password: "palimar108"
+  # Set up a wifi access point
+  ap: {}
+
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+dashboard_import:
+  package_import_url: github://esphome/firmware/esphome-web/esp32c3.yaml@main
+  import_full_config: true
+
+# Sets up Bluetooth LE (Only on ESP32) to allow the user
+# to provision wifi credentials to the device.
+esp32_improv:
+  authorizer: none
+
+# To have a "next url" for improv serial
+web_server:
+
+
+uart:
+  id: ld2420_radar
+  tx_pin: GPIO6  # Update with your Tx pin (GPIO6 recommended for Xaio ESP32-C3)
+  rx_pin: GPIO7  # Update with your Rx pin (GPIO7 recommended for Xaio ESP32-C3)
+  baud_rate: 115200
+  parity: NONE
+  stop_bits: 1
+
+ld2420:  
+  #%20Enable%20simple%20mode%20for%20older%20firmware
+
+text_sensor:
+  - platform: ld2420
+    fw_version:
+      name: LD2420 Firmware
+
+sensor:
+  - platform: ld2420
+    moving_distance:
+      name: Moving Distance
+
+binary_sensor:
+  - platform: ld2420
+    has_target:
+      name: Presence
+
+select:
+  - platform: ld2420
+    operating_mode:
+      name: Operating Mode
+
+
+number:
+  - platform: ld2420
+    presence_timeout:
+      name: Detection Presence Timeout
+    min_gate_distance:
+      name: Detection Gate Minimum
+    max_gate_distance:
+      name: Detection Gate Maximum
+    gate_0:
+      move_threshold:
+        name: "gate0m"
+      still_threshold:
+        name: "gate0s"
+
+    gate_1:
+      move_threshold:
+        name: "gate1m"
+      still_threshold:
+        name: "gate1s"
+
+    gate_2:
+      move_threshold:
+        name: "gate2m"
+      still_threshold:
+        name: "gate2s"
+
+    gate_3:
+      move_threshold:
+        name: "gate3m"
+      still_threshold:
+        name: "gate3s"
+
+    gate_4:
+      move_threshold:
+        name: "gate4m"
+      still_threshold:
+        name: "gate4s"
+
+    gate_5:
+      move_threshold:
+        name: "gate5m"
+      still_threshold:
+        name: "gate5s"
+
+    gate_6:
+      move_threshold:
+        name: "gate6m"
+      still_threshold:
+        name: "gate6s"
+
+    gate_7:
+      move_threshold:
+        name: "gate7m"
+      still_threshold:
+        name: "gate7s"
+
+    gate_8:
+      move_threshold:
+        name: "gate8m"
+      still_threshold:
+        name: "gate8s"
+
+    gate_9:
+      move_threshold:
+        name: "gate9m"
+      still_threshold:
+        name: "gate9s"
+
+    gate_10:
+      move_threshold:
+        name: "gate10m"
+      still_threshold:
+        name: "gate10s"
+
+    gate_11:
+      move_threshold:
+        name: "gate11m"
+      still_threshold:
+        name: "gate11s"
+
+    gate_12:
+      move_threshold:
+        name: "gate12m"
+      still_threshold:
+        name: "gate12s"
+
+    gate_13:
+      move_threshold:
+        name: "gate13m"
+      still_threshold:
+        name: "gate13s"
+
+    gate_14:
+      move_threshold:
+        name: "gate14m"
+      still_threshold:
+        name: "gate14s"
+
+    gate_15:
+      move_threshold:
+        name: "gate15m"
+      still_threshold:
+        name: "gate15s"
+      
+
+
+    # Gate-specific thresholds (0-15)
+
+
+button:
+  - platform: ld2420
+    apply_config:
+      name: Apply Config
+    factory_reset:
+      name: Factory Reset
+    restart_module:
+      name: Restart Module
+    revert_config:
+      name: Undo Edits
+
+
+
