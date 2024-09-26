@@ -5,7 +5,7 @@
 
 
 
-# Bedroom Presence Detection using LD2420 Radar with ESPHome
+# Human Presence Detection using LD2420 Radar with ESPHome
 
 This project configures an ESP32 board for presence detection using the LD2420 radar sensor. The configuration includes specific move and still threshold values for 16 gates based on customized input.
 
