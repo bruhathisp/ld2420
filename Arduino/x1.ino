@@ -1,6 +1,7 @@
 #define BLYNK_TEMPLATE_ID "TMPL3jKCoYK-i"
 #define BLYNK_TEMPLATE_NAME "Test"
 #define BLYNK_AUTHTOKEN "k-2MItSd9qdyh3pfpdd2oFYy1fqxSnvU"
+
 #define CLOUDCHECKER V4
 
 #include <WiFi.h>
@@ -8,8 +9,8 @@
 #include <ArduinoBLE.h>
 
 char auth[] = BLYNK_AUTHTOKEN;
-char ssid[] = "Sathya _4G";
-char pass[] = "palimar108";
+char ssid[] = "Redmi 9i";
+char pass[] = "bruhathie";
 float distance = 0;  // Default value for distance
 
 BLEService RadarService("19B10000-E8F2-537E-4F6C-D104768A1214");
@@ -96,7 +97,5 @@ void loop() {
 
   delay(2000);  // Wait 2 seconds before sending the next set of values
 }
-
-
 
 
