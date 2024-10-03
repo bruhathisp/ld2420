@@ -12,6 +12,7 @@ char auth[] = BLYNK_AUTHTOKEN;
 char ssid[] = "Redmi 9i";
 char pass[] = "bruhathie";
 float distance = 0;  // Default value for distance
+float battery = 0;   // Variable to store battery percentage
 
 BLEService RadarService("19B10000-E8F2-537E-4F6C-D104768A1214");
 BLEStringCharacteristic radarCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite, 55);
@@ -19,6 +20,7 @@ BLEStringCharacteristic radarCharacteristic("19B10001-E8F2-537E-4F6C-D104768A121
 // Radar hardware pins and logic
 #define RADAR_RX_PIN 20
 #define RADAR_TX_PIN 21
+#define VOLTAGE_PIN 2  // Use GPIO 2 to read voltage as per your instructions
 HardwareSerial radarSerial(1);
 int radarDistance;
 String radarDistanceStr;
@@ -65,6 +67,14 @@ void readRadarData() {
   }
 }
 
+// Function to read battery voltage and calculate battery percentage
+void readVoltage() {
+  float read = analogRead(VOLTAGE_PIN);
+  float voltage = (read / 4095.0) * 2 * 2.63 * 1.1;  // Calculate voltage
+  battery = map(voltage, 3.2, 4.2, 0, 100);  // Map voltage to battery percentage (0-100%)
+  Serial.printf("Battery Voltage: %.2f V, Battery Percentage: %.2f%%\n", voltage, battery);
+}
+
 void setup() {
   Serial.begin(9600);
   while (!Serial);
@@ -100,9 +110,9 @@ void loop() {
   readRadarData();
   Blynk.virtualWrite(V2, radarDistanceStr);  // Send radar data from hardware to V2 as a string
 
-  // Update random values for V3
-  float randomValueV3 = random(100, 500) / 10.0;  // Random float between 10.0 and 50.0
-  Blynk.virtualWrite(V3, randomValueV3);
+  // Read battery voltage and send percentage to V3
+  readVoltage();
+  Blynk.virtualWrite(V3, battery);  // Send battery percentage to V3
 
   // BLE handling: check if a BLE central device is connected
   BLEDevice central = BLE.central();
@@ -131,6 +141,3 @@ void loop() {
 
   delay(2000);  // Wait 2 seconds before sending the next set of values
 }
-
-
-
