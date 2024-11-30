@@ -1,51 +1,84 @@
 #include <ArduinoBLE.h>
 
-BLEService batteryService("12345678-1234-1234-1234-123456789abc");  // Create a BLE Service
-BLEStringCharacteristic batteryCharacteristic("87654321-4321-4321-4321-abcdefabcdef", BLERead | BLEWrite, 10);  // Create a BLE Characteristic to store the battery percentage
+float voltage = 0;
+int battery = 0;
 
-float batteryPercentage = 75;  // Example battery percentage for X2
+String radarData = "";  // The string you want to send
+String distanceStr = "13";
+
+// Function to read battery voltage and calculate battery percentage
+void readVoltage() {
+  float read = analogRead(A0);
+  voltage = (read / 4095) * 2 * 2.63 * 1.1;
+  battery = map(voltage, 3.2, 4.2, 0, 100);  // Map the voltage to a percentage (0-100)
+}
+
+// Function to measure radar data along with voltage and battery
+void radarDataMeasure() {
+  // Generate a random distance between 10 and 100 cm
+  int randomDistance = random(10, 100);
+  
+  // Convert the random distance to a string
+  distanceStr = String(randomDistance);
+
+  // Read the battery voltage and percentage
+  readVoltage();
+
+  // Construct the radar data string with the voltage, battery percentage, and random distance
+  radarData = "voltage: " + String(voltage, 2) + ", Battery: " + String(battery) + "%, Charging: 1, Distance: " + distanceStr + " cm,";  
+}
+
+void controlRadar(BLEDevice peripheral){
+  if (peripheral.connect()) {
+    // Connection established
+  } else {
+    return;
+  }
+
+  if (peripheral.discoverAttributes()) {
+    // Attributes discovered
+  } else {
+    peripheral.disconnect();
+    return;
+  }
+
+  BLECharacteristic RadarCharacteristic = peripheral.characteristic("19b10001-e8f2-537e-4f6c-d104768A1214");
+
+  if (!RadarCharacteristic || !RadarCharacteristic.canWrite()) {
+    peripheral.disconnect();
+    return;
+  }
+
+  while (peripheral.connected()) {
+    radarDataMeasure();
+    
+    // Convert String to byte array
+    int strLen = radarData.length() + 1; // +1 for null terminator
+    char data[strLen];
+    radarData.toCharArray(data, strLen);
+    
+    // Write the byte array to the characteristic
+    RadarCharacteristic.writeValue((uint8_t*)data, strLen);
+    
+    delay(1000);  // Send data every second
+  }
+}
 
 void setup() {
   Serial.begin(115200);
+  while (!Serial);
 
-  // Initialize BLE
-  if (!BLE.begin()) {
-    Serial.println("Starting BLE failed.");
-    while (1);  // If BLE fails to start, enter an infinite loop
-  }
-
-  // Set BLE Local Name and service
-  BLE.setLocalName("X2_Module");  // Name of the X2 device
-  BLE.setAdvertisedService(batteryService);  // Advertise the battery service
-  batteryService.addCharacteristic(batteryCharacteristic);  // Add the battery characteristic to the service
-  BLE.addService(batteryService);  // Add the service
-  BLE.advertise();  // Start advertising
-  Serial.println("BLE service started, advertising as X2_Module...");
-
-  // Send initial battery percentage
-  batteryCharacteristic.writeValue(String(batteryPercentage));  // Write initial battery percentage
+  BLE.begin();
+  BLE.scanForUuid("19b10000-e8f2-537e-4f6c-d104768A1214");
 }
 
 void loop() {
-  BLEDevice central = BLE.central();  // Wait for a central device to connect
+  BLEDevice peripheral = BLE.available();
 
-  // If a central device is connected
-  if (central) {
-    Serial.print("Connected to central: ");
-    Serial.println(central.address());  // Print the central device's address
-
-    // Send updated battery percentage every 2 seconds
-    while (central.connected()) {
-      batteryPercentage = random(20, 101);  // Simulate random battery percentage between 20% and 100%
-      batteryCharacteristic.writeValue(String(batteryPercentage));  // Write the updated battery percentage to the characteristic
-      Serial.printf("Sent battery percentage to X1: %.2f%%\n", batteryPercentage);
-
-      delay(2000);  // Wait 2 seconds before sending the next update
+  if (peripheral) {
+    if (peripheral.localName() == "X2") {
+      controlRadar(peripheral);
     }
-
-    Serial.print("Disconnected from central: ");
-    Serial.println(central.address());
+    BLE.scanForUuid("19b10000-e8f2-537e-4f6c-d104768A1214");
   }
-
-  delay(1000);  // Wait before the next BLE check
 }
