@@ -4,7 +4,7 @@
 ``` C
 #define BLYNK_TEMPLATE_ID "TMPL3jKCoYK-i"
 #define BLYNK_TEMPLATE_NAME "Test"
-#define BLYNK_AUTHTOKEN "k-2MItSd9qdyh3pfpdd2oFYy1fqxSnvU"
+#define BLYNK_AUTHTOKEN ""
 #define CLOUDCHECKER V4
 
 #include <WiFi.h>
