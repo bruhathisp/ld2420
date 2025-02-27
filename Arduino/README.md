@@ -12,8 +12,8 @@
 #include <ArduinoBLE.h>
 
 char auth[] = BLYNK_AUTHTOKEN;
-char ssid[] = "Sathya _4G";
-char pass[] = "palimar108";
+char ssid[] = "";
+char pass[] = "";
 float distance;
 
 BLEService RadarService("19B10000-E8F2-537E-4F6C-D104768A1214");
